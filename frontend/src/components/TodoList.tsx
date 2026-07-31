@@ -5,6 +5,7 @@ import TodoItem from "./TodoItem";
 interface TodoListProps {
   todos: Todo[];
   toggleTodo: (id: number) => Promise<void>;
+  toggleFavorite: (id: number) => Promise<void>;
   deleteTodo: (id: number) => Promise<void>;
   disabled: boolean;
 }
@@ -12,6 +13,7 @@ interface TodoListProps {
 const TodoList: React.FC<TodoListProps> = ({
   todos,
   toggleTodo,
+  toggleFavorite,
   deleteTodo,
   disabled,
 }) => {
@@ -22,6 +24,7 @@ const TodoList: React.FC<TodoListProps> = ({
           key={todo.id}
           todo={todo}
           toggleTodo={toggleTodo}
+          toggleFavorite={toggleFavorite}
           deleteTodo={deleteTodo}
           disabled={disabled}
         />

@@ -8,29 +8,34 @@ export const getTodos = async (): Promise<Todo[]> => {
   return res.json();
 };
 
-export const createTodo = async (title: string): Promise<void> => {
+type TodoUpdate = Partial<Pick<Todo, "completed" | "favorite">>;
+
+export const createTodo = async (
+  title: string,
+  description: string
+): Promise<void> => {
   const res = await fetch(BASE_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ title }),
+    body: JSON.stringify({ title, description }),
   });
   if (!res.ok) throw new Error("Error creating todo");
 };
 
-export const toggleTodoStatus = async (
+export const updateTodo = async (
   id: number,
-  currentStatus: boolean
+  update: TodoUpdate
 ): Promise<void> => {
   const res = await fetch(`${BASE_URL}/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ completed: !currentStatus }),
+    body: JSON.stringify(update),
   });
-  if (!res.ok) throw new Error("Error toggling todo status");
+  if (!res.ok) throw new Error("Error updating todo");
 };
 
 export const deleteTodo = async (id: number): Promise<void> => {

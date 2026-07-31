@@ -4,14 +4,15 @@ import {
   createTodo,
   deleteTodo,
   getTodos,
-  toggleTodoStatus,
+  updateTodo,
 } from "./api/todo";
 import TodoForm from "./components/TodoForm";
-import TodoList from "./components/TodoList";
+import TodoSection from "./components/TodoSection";
 
 function App() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [error, setError] = useState("");
   const [isPending, setIsPending] = useState(false);
   const pendingRef = useRef(false);
@@ -34,54 +35,67 @@ function App() {
     void loadTodos();
   }, [loadTodos]);
 
-  const addTodo = async () => {
-    if (!title.trim() || pendingRef.current) return;
+  const mutateTodos = async (
+    mutation: () => Promise<void>,
+    errorMessage: string
+  ) => {
+    if (pendingRef.current) return false;
     pendingRef.current = true;
     setIsPending(true);
     try {
-      await createTodo(title.trim());
-      setTitle("");
+      await mutation();
       await loadTodos();
+      return true;
     } catch {
-      setError("Unable to add the task.");
+      setError(errorMessage);
+      return false;
     } finally {
       pendingRef.current = false;
       setIsPending(false);
+    }
+  };
+
+  const addTodo = async () => {
+    if (!title.trim()) return;
+    const created = await mutateTodos(
+      () => createTodo(title.trim(), description.trim()),
+      "Unable to add the task."
+    );
+    if (created) {
+      setTitle("");
+      setDescription("");
     }
   };
 
   const toggleTodo = async (id: number) => {
-    if (pendingRef.current) return;
     const todo = todos.find((t) => t.id === id);
     if (!todo) return;
 
-    pendingRef.current = true;
-    setIsPending(true);
-    try {
-      await toggleTodoStatus(id, todo.completed);
-      await loadTodos();
-    } catch {
-      setError("Unable to update the task.");
-    } finally {
-      pendingRef.current = false;
-      setIsPending(false);
-    }
+    await mutateTodos(
+      () => updateTodo(id, { completed: !todo.completed }),
+      "Unable to update the task."
+    );
+  };
+
+  const toggleFavorite = async (id: number) => {
+    const todo = todos.find((t) => t.id === id);
+    if (!todo) return;
+
+    await mutateTodos(
+      () => updateTodo(id, { favorite: !todo.favorite }),
+      "Unable to update the favorite."
+    );
   };
 
   const removeTodo = async (id: number) => {
-    if (pendingRef.current) return;
-    pendingRef.current = true;
-    setIsPending(true);
-    try {
-      await deleteTodo(id);
-      await loadTodos();
-    } catch {
-      setError("Unable to delete the task.");
-    } finally {
-      pendingRef.current = false;
-      setIsPending(false);
-    }
+    await mutateTodos(
+      () => deleteTodo(id),
+      "Unable to delete the task."
+    );
   };
+
+  const favoriteTodos = todos.filter((todo) => todo.favorite);
+  const regularTodos = todos.filter((todo) => !todo.favorite);
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -91,18 +105,34 @@ function App() {
         <TodoForm
           title={title}
           setTitle={setTitle}
+          description={description}
+          setDescription={setDescription}
           addTodo={addTodo}
           disabled={isPending}
         />
 
         {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
-        <TodoList
-          todos={todos}
-          toggleTodo={toggleTodo}
-          deleteTodo={removeTodo}
-          disabled={isPending}
-        />
+        <div className="space-y-6">
+          <TodoSection
+            title="Favorites"
+            todos={favoriteTodos}
+            emptyMessage="No favorite tasks yet."
+            toggleTodo={toggleTodo}
+            toggleFavorite={toggleFavorite}
+            deleteTodo={removeTodo}
+            disabled={isPending}
+          />
+          <TodoSection
+            title="Tasks"
+            todos={regularTodos}
+            emptyMessage="No tasks yet."
+            toggleTodo={toggleTodo}
+            toggleFavorite={toggleFavorite}
+            deleteTodo={removeTodo}
+            disabled={isPending}
+          />
+        </div>
       </div>
     </div>
   );
