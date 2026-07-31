@@ -4,10 +4,17 @@ import TodoItem from "./TodoItem";
 
 interface TodoListProps {
   todos: Todo[];
-  toggleTodo: (id: number) => void;
+  toggleTodo: (id: number) => Promise<void>;
+  deleteTodo: (id: number) => Promise<void>;
+  disabled: boolean;
 }
 
-const TodoList: React.FC<TodoListProps> = ({ todos, toggleTodo }) => {
+const TodoList: React.FC<TodoListProps> = ({
+  todos,
+  toggleTodo,
+  deleteTodo,
+  disabled,
+}) => {
   return (
     <ul className="space-y-2">
       {todos.map((todo) => (
@@ -15,6 +22,8 @@ const TodoList: React.FC<TodoListProps> = ({ todos, toggleTodo }) => {
           key={todo.id}
           todo={todo}
           toggleTodo={toggleTodo}
+          deleteTodo={deleteTodo}
+          disabled={disabled}
         />
       ))}
     </ul>

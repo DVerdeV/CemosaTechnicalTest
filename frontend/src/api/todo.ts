@@ -9,19 +9,20 @@ export const getTodos = async (): Promise<Todo[]> => {
 };
 
 export const createTodo = async (title: string): Promise<void> => {
-  await fetch(BASE_URL, {
+  const res = await fetch(BASE_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ title, completed: false }),
+    body: JSON.stringify({ title }),
   });
+  if (!res.ok) throw new Error("Error creating todo");
 };
 
 export const toggleTodoStatus = async (
   id: number,
   currentStatus: boolean
-): Promise<Todo> => {
+): Promise<void> => {
   const res = await fetch(`${BASE_URL}/${id}`, {
     method: "PATCH",
     headers: {
@@ -30,5 +31,11 @@ export const toggleTodoStatus = async (
     body: JSON.stringify({ completed: !currentStatus }),
   });
   if (!res.ok) throw new Error("Error toggling todo status");
-  return res.json();
+};
+
+export const deleteTodo = async (id: number): Promise<void> => {
+  const res = await fetch(`${BASE_URL}/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Error deleting todo");
 };
