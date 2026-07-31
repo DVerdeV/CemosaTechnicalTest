@@ -1,30 +1,51 @@
 [
   {
+    "id": 1,
     "title": "Learn React",
-    "completed": true
+    "description": "Review component state and hooks",
+    "completed": true,
+    "favorite": false
   },
   {
+    "id": 2,
     "title": "Learn TypeScript",
-    "completed": true
+    "description": "Practice typed frontend development",
+    "completed": true,
+    "favorite": true
   },
   {
+    "id": 3,
     "title": "Learn Vite",
-    "completed": false
+    "description": "",
+    "completed": false,
+    "favorite": false
   },
   {
+    "id": 4,
     "title": "Learn FastAPI",
-    "completed": false
+    "description": "Build a small REST API",
+    "completed": false,
+    "favorite": true
   },
   {
+    "id": 5,
     "title": "Learn Docker",
-    "completed": false
+    "description": "",
+    "completed": false,
+    "favorite": false
   },
   {
+    "id": 6,
     "title": "Learn PostgreSQL",
-    "completed": false
+    "description": "",
+    "completed": false,
+    "favorite": false
   },
   {
+    "id": 7,
     "title": "Learn Tailwind CSS",
-    "completed": false
+    "description": "Style the todo interface",
+    "completed": false,
+    "favorite": false
   }
 ]
